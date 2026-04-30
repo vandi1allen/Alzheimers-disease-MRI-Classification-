@@ -1,0 +1,120 @@
+\documentclass[12pt]{article}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+
+\title{Deep Learning for Multiclass Alzheimer’s Disease Classification Using MRI}
+\author{Vandi Allen}
+\date{April 2026}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+Alzheimer’s disease is a progressive neurological disorder that affects memory, cognitive function, and behavior. Early and accurate diagnosis is critical for treatment planning and improving patient outcomes. With the increasing availability of medical imaging data, deep learning techniques have become an effective tool for analyzing brain MRI scans and identifying patterns associated with different stages of the disease.
+
+In this project, convolutional neural networks (CNNs) are used to classify structural MRI images into five diagnostic categories: Alzheimer’s Disease (AD), Cognitively Normal (CN), Early Mild Cognitive Immpairment (EMCI), Late Mild Cognitive Impairment (LMCI), and Mild Cognitive Impairment (MCI). The objective is to evaluate how well deep learning models can distinguish between these stages and to analyze the challenges associated with medical image classification.
+
+Two approaches are implemented and compared: a custom CNN model and a transfer learning model based on MobileNetV2. The models are evaluated using accuracy, precision, recall, F1-score, and confusion matrix analysis.
+
+\section{Dataset Description}
+
+The dataset consists of structural MRI brain images categorized into five classes: AD, CN, EMCI, LMCI, and MCI. The dataset is divided into training and test sets, with the training data further split into training and validation subsets.
+
+The dataset contains 883 training images, 218 validation images, and 195 test images. One important characteristic of the dataset is class imbalance. Some classes, particularly CN, contain more samples than others, which can bias the model toward majority class predictions and negatively impact performance on minority classes.
+
+\section{Preprocessing}
+
+All images were resized to a uniform resolution of 224 × 224 pixels to ensure compatibility with deep learning models. Pixel values were normalized to the range [0,1] to improve training stability.
+
+MRI images were treated as 2D slices, which simplifies computation but may limit the model’s ability to capture full 3D anatomical structure.
+
+To improve generalization and reduce overfitting, data augmentation techniques were applied. These included small rotations, zooming, width shifts, and height shifts. These transformations simulate realistic variations in MRI scans without altering their anatomical meaning.
+
+\section{Training Strategy}
+
+All models were trained using the Adam optimizer with a learning rate of 0.0001. The categorical cross-entropy loss function was used due to the multiclass nature of the problem. A batch size of 32 was selected to balance computational efficiency and model performance.
+
+The models were trained for up to 10 epochs. Early stopping was applied in some experiments to prevent overfitting by monitoring validation loss. All experiments were conducted using Google Colab with GPU acceleration.
+
+\section{Custom CNN Model}
+
+A custom convolutional neural network was implemented as a baseline model. The architecture consisted of multiple convolutional layers followed by batch normalization and max pooling layers for feature extraction.
+
+Fully connected layers were used for classification, with dropout applied to reduce overfitting.
+
+Without data augmentation, the model achieved a test accuracy of approximately 27\%. After applying augmentation techniques, the model improved significantly, achieving a test accuracy of approximately 43.6\%. This demonstrates the importance of increasing dataset variability when working with limited medical imaging data.
+
+\section{Transfer Learning Model}
+
+A transfer learning approach was implemented using the MobileNetV2 architecture pre-trained on ImageNet. The convolutional base was used as a feature extractor, and new fully connected layers were added for classification.
+
+The MobileNetV2 model achieved a test accuracy of approximately 43.1\%, which was comparable to the custom CNN with augmentation. This suggests that while transfer learning provides a strong starting point, domain differences between natural images and MRI scans may limit its effectiveness.
+
+\section{Results and Evaluation}
+
+The models were evaluated using accuracy, precision, recall, and F1-score. The augmented custom CNN achieved the highest performance with a test accuracy of 43.6\%, while MobileNetV2 achieved 43.1\%. While the overall accuracy appears moderate, the class-level performance varies significantly, indicating that accuracy alone is not sufficient to evaluate model effectiveness in this multiclass setting.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{accuracy_plot.png}
+\caption{Training and Validation Accuracy Across Epochs}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{loss_plot.png}
+\caption{Training and Validation Loss Across Epochs}
+\end{figure}
+
+The training curves show that the model improves during early epochs but begins to stabilize, indicating limited learning capacity. The gap between training and validation performance suggests mild overfitting, which was partially reduced through data augmentation.
+
+To further analyze model performance, a confusion matrix is presented to examine class-level predictions.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{confusion_matrix.png}
+\caption{Confusion Matrix for the Augmented Custom CNN Model}
+\end{figure}
+
+The confusion matrix reveals that the model is heavily biased toward predicting the CN class. While this leads to higher overall accuracy, performance on other classes is significantly lower.
+
+\section{Overfitting and Class Imbalance Discussion}
+
+The initial CNN model showed unstable validation performance and clear signs of overfitting. Although data augmentation improved generalization, the model still struggled with class imbalance.
+
+The confusion matrix demonstrates that the model frequently predicts the majority class (CN), resulting in poor recall for minority classes such as AD, EMCI, LMCI, and MCI. This indicates that the model has difficulty distinguishing between subtle differences in disease progression.
+
+Class weighting was applied to address this issue, but improvements were limited. This highlights the difficulty of multiclass classification in medical imaging tasks.
+
+These findings emphasize a key limitation of deep learning in healthcare applications: even when overall accuracy appears acceptable, class imbalance and subtle inter-class similarities can significantly reduce model reliability in real-world clinical scenarios.
+
+\section{Model Comparison}
+
+The custom CNN with augmentation slightly outperformed the MobileNetV2 model. This suggests that the custom CNN was able to learn features more relevant to the MRI domain, while the pre-trained model may not fully adapt due to differences between medical and natural image data.
+
+\section{Conclusion}
+
+This project explored deep learning approaches for classifying Alzheimer’s disease stages using MRI images. A custom CNN and a transfer learning model were implemented and evaluated.
+
+Data augmentation significantly improved model performance, increasing accuracy from 27\% to 43.6\%. However, class imbalance and difficulty distinguishing between similar disease stages remained major challenges.
+
+These findings emphasize the importance of careful model design, dataset balance, and domain-specific adaptation when applying deep learning to medical imaging problems. Future work could involve larger datasets, improved preprocessing techniques, and more advanced architectures to improve classification performance.
+
+\begin{thebibliography}{9}
+
+\bibitem{alzheimer}
+Lim, D. W., Katuwal, G. J., and Lee, J. Y. (2022).
+Deep learning-based classification of Alzheimer’s disease using brain MRI data.
+\textit{Frontiers in Aging Neuroscience}, 14, 876202.
+
+\bibitem{deep}
+LeCun, Y., Bengio, Y., and Hinton, G. (2015).
+Deep learning.
+\textit{Nature}, 521(7553), 436–444.
+
+\end{thebibliography}
+
+\end{document}
